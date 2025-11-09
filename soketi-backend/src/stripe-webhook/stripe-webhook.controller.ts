@@ -1,34 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Logger,
+  RawBodyRequest,
+  Headers,
+  Req,
+} from '@nestjs/common';
+import { StripeWebhook } from 'src/common/decorators/stripe-webhook.decorator';
 import { StripeWebhookService } from './stripe-webhook.service';
-import { CreateStripeWebhookDto } from './dto/create-stripe-webhook.dto';
-import { UpdateStripeWebhookDto } from './dto/update-stripe-webhook.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('stripe-webhook')
 export class StripeWebhookController {
-  constructor(private readonly stripeWebhookService: StripeWebhookService) {}
+  private readonly logger = new Logger(StripeWebhookController.name);
+  private readonly webhookSecret: string;
 
-  @Post()
-  create(@Body() createStripeWebhookDto: CreateStripeWebhookDto) {
-    return this.stripeWebhookService.create(createStripeWebhookDto);
+  constructor(
+    private readonly stripeWebhookService: StripeWebhookService,
+    private readonly configService: ConfigService,
+  ) {
+    this.webhookSecret =
+      this.configService.get<string>('STRIPE_WEBHOOK_SECRET') ?? '';
+    if (this.webhookSecret === '') {
+      throw new Error('STRIPE_WEBHOOK_SECRET is not defined');
+    }
   }
 
-  @Get()
-  findAll() {
-    return this.stripeWebhookService.findAll();
-  }
+  @StripeWebhook('')
+  async handleWebhookEvent(
+    @Headers('stripe-signature') signature: string,
+    @Req() req: RawBodyRequest<any>,
+  ) {
+    if (!signature) {
+      return;
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stripeWebhookService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStripeWebhookDto: UpdateStripeWebhookDto) {
-    return this.stripeWebhookService.update(+id, updateStripeWebhookDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stripeWebhookService.remove(+id);
+    return this.stripeWebhookService.handleWebhookEvent(signature, req.rawBody);
   }
 }

@@ -5,7 +5,7 @@ import { Stripe } from 'stripe';
 
 @Global()
 @Module({
-  imports: [ConfigModule], // Importamos ConfigModule aquí
+  imports: [ConfigModule],
   providers: [
     {
       provide: 'STRIPE_CLIENT',
@@ -20,9 +20,9 @@ import { Stripe } from 'stripe';
           apiVersion: '2025-10-29.clover',
         });
       },
-      inject: [ConfigService], // Inyectamos ConfigService
+      inject: [ConfigService],
     },
   ],
-  exports: ['STRIPE_CLIENT'], // Exportamos el cliente de Stripe
+  exports: ['STRIPE_CLIENT'],
 })
 export class StripeModule {}

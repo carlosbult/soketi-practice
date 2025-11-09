@@ -1,26 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStripeWebhookDto } from './dto/create-stripe-webhook.dto';
-import { UpdateStripeWebhookDto } from './dto/update-stripe-webhook.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { Stripe } from 'stripe';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StripeWebhookService {
-  create(createStripeWebhookDto: CreateStripeWebhookDto) {
-    return 'This action adds a new stripeWebhook';
-  }
+  constructor(
+    @Inject('STRIPE_CLIENT') private readonly stripe: Stripe,
+    private readonly configService: ConfigService,
+  ) {}
 
-  findAll() {
-    return `This action returns all stripeWebhook`;
-  }
+  async handleWebhookEvent(signature: string, payload: Buffer) {
+    const event = this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      this.configService.get<string>('STRIPE_WEBHOOK_SECRET') ?? '',
+    );
 
-  findOne(id: number) {
-    return `This action returns a #${id} stripeWebhook`;
-  }
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+        // Handle payment success
+        break;
+      // Add more event types as needed
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
 
-  update(id: number, updateStripeWebhookDto: UpdateStripeWebhookDto) {
-    return `This action updates a #${id} stripeWebhook`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} stripeWebhook`;
+    return { received: true };
   }
 }
