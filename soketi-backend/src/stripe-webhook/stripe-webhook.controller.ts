@@ -31,7 +31,8 @@ export class StripeWebhookController {
     @Req() req: RawBodyRequest<any>,
   ) {
     if (!signature) {
-      return;
+      this.logger.error('No signature found in headers');
+      throw new Error('No signature found in headers');
     }
 
     return this.stripeWebhookService.handleWebhookEvent(signature, req.rawBody);

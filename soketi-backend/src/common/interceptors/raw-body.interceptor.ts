@@ -11,11 +11,11 @@ import { FastifyRequest } from 'fastify';
 @Injectable()
 export class RawBodyInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const request = context.switchToHttp().getRequest<FastifyRequest>();
-    const rawBody = (request as any).rawBody;
+    const http = context.switchToHttp();
+    const request = http.getRequest<FastifyRequest>();
 
-    if (rawBody) {
-      (request as any).raw = rawBody;
+    if (request.raw) {
+      request.body = request.raw.toString();
     }
 
     return next.handle();

@@ -5,8 +5,10 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import fastifyRawBody from 'fastify-raw-body';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
   const fastifyAdapter = new FastifyAdapter();
   const fastifyInstance = fastifyAdapter.getInstance();
 
@@ -23,6 +25,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix('api');
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT || 3000);
+  logger.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();

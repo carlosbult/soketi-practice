@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { StripeWebhookModule } from './stripe-webhook/stripe-webhook.module';
 import { StripeModule } from './stripe/stripe.module';
+import { SoketiModule } from './soketi/soketi.module';
 
 @Module({
   imports: [
@@ -11,8 +12,7 @@ import { StripeModule } from './stripe/stripe.module';
     }),
     StripeWebhookModule,
     StripeModule,
+    SoketiModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
