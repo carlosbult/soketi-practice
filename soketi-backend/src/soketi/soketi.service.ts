@@ -9,17 +9,22 @@ export class SoketiService {
 
   constructor(private readonly configService: ConfigService) {
     this.pusher = new Pusher({
-      appId: this.configService.get<string>('PUSHER_APP_ID') ?? '',
-      key: this.configService.get<string>('PUSHER_APP_KEY') ?? '',
-      secret: this.configService.get<string>('PUSHER_APP_SECRET') ?? '',
-      cluster: this.configService.get<string>('PUSHER_APP_CLUSTER') ?? '',
-      useTLS: true,
+      appId: this.configService.get<string>('SOKETI_APP_ID') ?? '',
+      key: this.configService.get<string>('SOKETI_APP_KEY') ?? '',
+      secret: this.configService.get<string>('SOKETI_APP_SECRET') ?? '',
+      port: this.configService.get<string>('SOKETI_APP_PORT') ?? '6001',
+      host: this.configService.get<string>('SOKETI_APP_HOST') ?? '127.0.0.1',
+
+      // Cluster para produccion
+      // cluster: this.configService.get<string>('SOKETI_APP_CLUSTER') ?? '',
+      // useTLS: this.configService.get<boolean>('SOKETI_APP_USE_TLS') ?? false,
     });
   }
 
   async broadcast(channel: string, event: string, data: any): Promise<boolean> {
     try {
       await this.pusher.trigger(channel, event, data);
+
       this.logger.debug(
         `[Soketi] Evento '${event}' enviado al canal '${channel}'`,
       );
