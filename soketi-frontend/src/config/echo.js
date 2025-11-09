@@ -23,6 +23,10 @@ if (import.meta.env.VITE_PUSHER_APP_CLUSTER) {
     config.cluster = import.meta.env.VITE_PUSHER_APP_CLUSTER;
 }
 
-window.Echo = new Echo(config);
+// window.Echo = new Echo(config);
+
+const echoInstance = new Echo(config);
+window.Echo = echoInstance;
+export { echoInstance as Echo };
 
 console.log('Cliente Echo configurado para conectarse a Soketi...');

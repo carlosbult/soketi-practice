@@ -23,6 +23,8 @@ export class SoketiService {
 
   async broadcast(channel: string, event: string, data: any): Promise<boolean> {
     try {
+      console.log('Suscribiéndose al type of :', typeof data);
+
       await this.pusher.trigger(channel, event, data);
 
       this.logger.debug(

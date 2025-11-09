@@ -21,9 +21,10 @@ export class StripeWebhookService {
     // Handle the event
     switch (event.type) {
       case 'charge.succeeded':
-        const charge = event.data.object;
+        let charge = event.data.object;
+
         await this.soketiService.broadcast(
-          'private-charge.succeeded',
+          'stripe.charges',
           'charge.succeeded',
           charge,
         );
@@ -31,7 +32,7 @@ export class StripeWebhookService {
 
       case 'payment_intent.created':
         await this.soketiService.broadcast(
-          'payment_intent.created',
+          'stripe.payment_intent',
           'payment_intent.created',
           event.data.object,
         );
@@ -39,7 +40,7 @@ export class StripeWebhookService {
 
       case 'payment_intent.succeeded':
         await this.soketiService.broadcast(
-          'payment_intent.succeeded',
+          'stripe.payment_intent',
           'payment_intent.succeeded',
           event.data.object,
         );
@@ -47,7 +48,7 @@ export class StripeWebhookService {
 
       case 'charge.updated':
         await this.soketiService.broadcast(
-          'charge.updated',
+          'stripe.charges',
           'charge.updated',
           event.data.object,
         );
